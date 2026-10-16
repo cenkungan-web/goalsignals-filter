@@ -59,6 +59,8 @@
       box-shadow: 0 4px 14px rgba(46,166,255,0.3);
     }
     .submit-btn:disabled { background: #444; }
+
+    #status-txt { text-align: center; margin-top: 8px; font-size: 12px; color: #00c985; display: none; }
   </style>
 </head>
 <body>
@@ -189,7 +191,8 @@
     </div>
   </div>
 
-  <button class="submit-btn" id="submitBtn" onclick="sendToBot()">📊 Eşleşen Maçları Getir</button>
+  <button class="submit-btn" id="submitBtn" onclick="sendToBotDirect()">📊 Eşleşen Maçları Getir</button>
+  <div id="status-txt">⏳ Sorgu Google E-Tabloya iletildi, pencere kapatılıyor...</div>
 
   <script>
     const tg = window.Telegram ? window.Telegram.WebApp : null;
@@ -197,6 +200,9 @@
       tg.ready();
       tg.expand();
     }
+
+    // Google Apps Script Webhook URL'imiz
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw03UqjJX2ITNlXnor5Z2re1F037O9-ddfaebeELLm-n540SF5b4nLxPsr0hi6yCnSqng/exec";
 
     let currentBookmaker = "Bet365";
     let currentTiming = "open";
@@ -216,7 +222,23 @@
       document.getElementById("title-ms").innerText = "Maç Sonu (MS) " + (t === "open" ? "Açılış" : "Kapanış") + " Oranları";
     }
 
-    function sendToBot() {
+    function sendToBotDirect() {
+      const btn = document.getElementById("submitBtn");
+      const statusTxt = document.getElementById("status-txt");
+      btn.disabled = true;
+      btn.innerText = "⏳ Taranıyor...";
+      statusTxt.style.display = "block";
+
+      // Telegram kullanıcı ID'sini alıyoruz
+      let chatId = null;
+      if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        chatId = tg.initDataUnsafe.user.id;
+      }
+      if (!chatId) {
+        const u = new URLSearchParams(window.location.search);
+        chatId = u.get("chat_id");
+      }
+
       const payload = {
         bookmaker: currentBookmaker,
         timing: currentTiming,
@@ -240,11 +262,21 @@
         final_score: document.getElementById("final_score").value
       };
 
-      if (tg && tg.sendData) {
-        tg.sendData(JSON.stringify(payload));
-      } else {
-        alert("Lütfen Telegram içinden açın.");
-      }
+      // Doğrudan Google Apps Script'e POST atıyoruz (CORS engeline takılmayan no-cors modu)
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "direct_filter",
+          chat_id: chatId,
+          params: payload
+        })
+      }).then(() => {
+        setTimeout(() => { if (tg) tg.close(); }, 500);
+      }).catch(() => {
+        setTimeout(() => { if (tg) tg.close(); }, 500);
+      });
     }
   </script>
 </body>

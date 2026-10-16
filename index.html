@@ -3,10 +3,9 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>GoalSignals Analiz</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GoalSignals Analiz Paneli</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
 <style>
 :root {
   --bg:#0e1621;
@@ -21,44 +20,41 @@
   box-sizing:border-box;
   margin:0;
   padding:0;
-  font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;
+  font-family:-apple-system,Arial,sans-serif;
 }
 body {
   background:var(--bg);
   color:var(--text);
   padding:10px;
-  width:100%;
-  overflow-x:hidden;
 }
 .brand {
   text-align:center;
-  padding:8px 0 14px;
-  font-size:14px;
-  font-weight:700;
   color:#00c985;
+  font-size:14px;
+  font-weight:bold;
+  padding:8px 0 14px;
 }
-.tabs-row,.timing-row {
+.tabs,.timing {
   display:flex;
   gap:6px;
   margin-bottom:9px;
 }
-.tab-btn,.timing-btn {
+.tab,.time {
   flex:1;
-  padding:11px 5px;
   background:var(--card);
+  color:var(--muted);
   border:1px solid var(--border);
   border-radius:8px;
-  color:var(--muted);
-  font-weight:600;
+  padding:11px 4px;
   font-size:12px;
+  font-weight:600;
   cursor:pointer;
-  text-align:center;
 }
-.tab-btn.active {
+.tab.active {
   background:var(--accent);
   color:white;
 }
-.timing-btn.active {
+.time.active {
   background:#233b54;
   color:#64b5f6;
   border-color:#5288c1;
@@ -71,91 +67,82 @@ body {
   margin-bottom:9px;
 }
 .card-title {
-  font-size:11px;
-  font-weight:700;
   color:var(--muted);
-  text-transform:uppercase;
+  font-size:11px;
+  font-weight:bold;
   margin-bottom:9px;
 }
-.grid-3 {
+.grid3 {
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:6px;
 }
-.grid-2 {
+.grid2 {
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
   gap:6px;
 }
-.input-box {
+.field {
   display:flex;
   flex-direction:column;
   gap:4px;
   min-width:0;
 }
-.input-box label {
+.field label {
   font-size:11px;
   color:var(--muted);
 }
-.op-input-group {
+.pair {
   display:flex;
   gap:4px;
   min-width:0;
 }
-.op-select {
+.op {
   width:46px;
   flex-shrink:0;
   background:#1c2733;
-  border:1px solid var(--border);
   color:#64b5f6;
-  padding:8px 2px;
+  border:1px solid var(--border);
   border-radius:5px;
-  font-size:12px;
+  padding:8px 2px;
 }
-.val-input {
-  min-width:0;
+.val {
   width:100%;
+  min-width:0;
   flex:1;
   background:#0e1621;
+  color:white;
   border:1px solid var(--border);
-  color:#fff;
-  padding:9px 6px;
   border-radius:5px;
+  padding:9px 6px;
   font-size:12px;
-  outline:none;
 }
-.val-input:focus {
-  border-color:#5288c1;
-}
-.submit-btn {
+.submit {
   width:100%;
   background:var(--btn);
-  color:#fff;
-  border:none;
-  padding:15px;
+  color:white;
+  border:0;
   border-radius:9px;
+  padding:15px;
   font-size:14px;
-  font-weight:700;
+  font-weight:bold;
   cursor:pointer;
-  margin-top:8px;
 }
-.submit-btn:disabled {
+.submit:disabled {
   background:#475569;
-  cursor:default;
 }
-#status-txt {
+#status {
   display:none;
   text-align:center;
   margin:12px 0;
   font-size:12px;
   line-height:1.6;
-  color:#00c985;
 }
 .footer {
   text-align:center;
-  margin:16px 0;
   color:var(--muted);
   font-size:11px;
+  margin:18px 0;
 }
 </style>
 </head>
@@ -164,140 +151,139 @@ body {
 
 <div class="brand">⚡ GOALSIGNALS.COM.TR ANALİZ</div>
 
-<div class="tabs-row">
-  <button class="tab-btn active" id="tab-b365"
+<div class="tabs">
+  <button class="tab active" id="tabBet"
     onclick="setBookmaker('Bet365')">
     🟢 Bet365 Oranları
   </button>
-  <button class="tab-btn" id="tab-sbobet"
+  <button class="tab" id="tabSb"
     onclick="setBookmaker('Sbobet')">
     🔵 Sbobet Skor Oranları
   </button>
 </div>
 
-<div id="form-bet365">
+<div id="betForm">
 
-  <div class="timing-row">
-    <button class="timing-btn active" id="time-open"
+  <div class="timing">
+    <button class="time active" id="openBtn"
       onclick="setTiming('open')">
       Açılış Oranları
     </button>
-    <button class="timing-btn" id="time-close"
+    <button class="time" id="closeBtn"
       onclick="setTiming('close')">
       Kapanış Oranları
     </button>
   </div>
 
   <div class="card">
-    <div class="card-title" id="title-ms">
-      Maç Sonu (MS) Açılış Oranları
+    <div class="card-title" id="msTitle">
+      MAÇ SONU AÇILIŞ ORANLARI
     </div>
-    <div class="grid-3">
-      <div class="input-box">
+    <div class="grid3">
+      <div class="field">
         <label>MS 1</label>
-        <div class="op-input-group">
-          <select class="op-select" id="op_ms1"></select>
-          <input class="val-input" id="v_ms1" placeholder="1.75">
+        <div class="pair">
+          <select class="op" id="op_ms1"></select>
+          <input class="val" id="v_ms1" placeholder="1.75">
         </div>
       </div>
-      <div class="input-box">
+      <div class="field">
         <label>MS X</label>
-        <div class="op-input-group">
-          <select class="op-select" id="op_ms0"></select>
-          <input class="val-input" id="v_ms0" placeholder="3.40">
+        <div class="pair">
+          <select class="op" id="op_ms0"></select>
+          <input class="val" id="v_ms0" placeholder="3.40">
         </div>
       </div>
-      <div class="input-box">
+      <div class="field">
         <label>MS 2</label>
-        <div class="op-input-group">
-          <select class="op-select" id="op_ms2"></select>
-          <input class="val-input" id="v_ms2" placeholder="4.20">
+        <div class="pair">
+          <select class="op" id="op_ms2"></select>
+          <input class="val" id="v_ms2" placeholder="4.20">
         </div>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">MS Asya Handikap Oranları</div>
-    <div class="grid-2">
-      <div class="input-box">
+    <div class="card-title">MS ASYA HANDİKAP ORANLARI</div>
+    <div class="grid2">
+      <div class="field">
         <label>Ev Sahibi Handikap</label>
-        <div class="op-input-group">
-          <select class="op-select" id="op_ah_ev"></select>
-          <input class="val-input" id="v_ah_ev" placeholder="0.85">
+        <div class="pair">
+          <select class="op" id="op_ah_ev"></select>
+          <input class="val" id="v_ah_ev" placeholder="0.85">
         </div>
       </div>
-      <div class="input-box">
+      <div class="field">
         <label>Deplasman Handikap</label>
-        <div class="op-input-group">
-          <select class="op-select" id="op_ah_dep"></select>
-          <input class="val-input" id="v_ah_dep" placeholder="0.95">
+        <div class="pair">
+          <select class="op" id="op_ah_dep"></select>
+          <input class="val" id="v_ah_dep" placeholder="0.95">
         </div>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">MS Gol Bahisleri (Alt / Üst)</div>
-    <div class="grid-2">
-      <div class="input-box">
+    <div class="card-title">MS GOL BAHİSLERİ</div>
+    <div class="grid2">
+      <div class="field">
         <label>2.5 Üst</label>
-        <div class="op-input-group">
-          <select class="op-select" id="op_ust"></select>
-          <input class="val-input" id="v_ust" placeholder="1.65">
+        <div class="pair">
+          <select class="op" id="op_ust"></select>
+          <input class="val" id="v_ust" placeholder="1.65">
         </div>
       </div>
-      <div class="input-box">
+      <div class="field">
         <label>2.5 Alt</label>
-        <div class="op-input-group">
-          <select class="op-select" id="op_alt"></select>
-          <input class="val-input" id="v_alt" placeholder="1.95">
+        <div class="pair">
+          <select class="op" id="op_alt"></select>
+          <input class="val" id="v_alt" placeholder="1.95">
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<div id="form-sbobet" style="display:none">
+<div id="sbForm" style="display:none">
   <div class="card">
-    <div class="card-title">🎯 Sbobet Skor Oranı Seçimi</div>
-
-    <div class="input-box" style="margin-bottom:10px">
+    <div class="card-title">SBOBET SKOR ORANLARI</div>
+    <div class="field" style="margin-bottom:10px">
       <label>Aranacak Skor</label>
-      <select class="val-input" id="sb_score_select">
-        <optgroup label="Ev Sahibi Kazanır">
-          <option value="1:0">1 - 0</option>
-          <option value="2:0">2 - 0</option>
-          <option value="2:1" selected>2 - 1</option>
-          <option value="3:0">3 - 0</option>
-          <option value="3:1">3 - 1</option>
-          <option value="3:2">3 - 2</option>
-          <option value="4:0">4 - 0</option>
-          <option value="4:1">4 - 1</option>
-          <option value="4:2">4 - 2</option>
+      <select class="val" id="sb_score_select">
+        <optgroup label="Ev Sahibi">
+          <option value="1:0">1-0</option>
+          <option value="2:0">2-0</option>
+          <option value="2:1" selected>2-1</option>
+          <option value="3:0">3-0</option>
+          <option value="3:1">3-1</option>
+          <option value="3:2">3-2</option>
+          <option value="4:0">4-0</option>
+          <option value="4:1">4-1</option>
+          <option value="4:2">4-2</option>
         </optgroup>
         <optgroup label="Beraberlik">
-          <option value="0:0">0 - 0</option>
-          <option value="1:1">1 - 1</option>
-          <option value="2:2">2 - 2</option>
-          <option value="3:3">3 - 3</option>
+          <option value="0:0">0-0</option>
+          <option value="1:1">1-1</option>
+          <option value="2:2">2-2</option>
+          <option value="3:3">3-3</option>
         </optgroup>
-        <optgroup label="Deplasman Kazanır">
-          <option value="0:1">0 - 1</option>
-          <option value="0:2">0 - 2</option>
-          <option value="1:2">1 - 2</option>
-          <option value="0:3">0 - 3</option>
-          <option value="1:3">1 - 3</option>
-          <option value="2:3">2 - 3</option>
+        <optgroup label="Deplasman">
+          <option value="0:1">0-1</option>
+          <option value="0:2">0-2</option>
+          <option value="1:2">1-2</option>
+          <option value="0:3">0-3</option>
+          <option value="1:3">1-3</option>
+          <option value="2:3">2-3</option>
         </optgroup>
       </select>
     </div>
 
-    <div class="input-box">
-      <label>Skor Oranı ve Koşul</label>
-      <div class="op-input-group">
-        <select class="op-select" id="op_sb_odd"></select>
-        <input class="val-input" id="v_sb_odd"
+    <div class="field">
+      <label>Skor Oranı</label>
+      <div class="pair">
+        <select class="op" id="op_sb_odd"></select>
+        <input class="val" id="v_sb_odd"
           placeholder="8.50 veya 7.0-9.0">
       </div>
     </div>
@@ -306,25 +292,25 @@ body {
 
 <div class="card">
   <div class="card-title">
-    Gerçekleşen Maç Skoru (Opsiyonel)
+    GERÇEKLEŞEN MAÇ SKORU (OPSİYONEL)
   </div>
-  <input class="val-input" id="final_score"
-    placeholder="Örn: 2-1 veya 1-1">
+  <input class="val" id="final_score"
+    placeholder="Örn: 2-1">
 </div>
 
-<button class="submit-btn" id="submitBtn"
+<button class="submit" id="submitBtn"
   onclick="sendToBotDirect()">
   📊 Eşleşen Maçları Getir
 </button>
 
-<div id="status-txt" role="status" aria-live="polite"></div>
+<div id="status" role="status" aria-live="polite"></div>
 
 <div class="footer">
-  GoalSignals.com.tr — Geçmiş Maç Analiz Sistemi
+  GoalSignals.com.tr
 </div>
 
 <script>
-const GOOGLE_SCRIPT_URL =
+const SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbw03UqjJX2ITNlXnor5Z2re1F037O9-ddfaebeELLm-n540SF5b4nLxPsr0hi6yCnSqng/exec";
 
 const tg = window.Telegram?.WebApp || null;
@@ -334,12 +320,12 @@ if (tg) {
   tg.expand();
 }
 
-let currentBookmaker = "Bet365";
-let currentTiming = "open";
-let submitting = false;
+let bookmaker = "Bet365";
+let timing = "open";
+let busy = false;
 
-const $ = id => document.getElementById(id);
-const val = id => $(id)?.value?.trim() || "";
+const el = id => document.getElementById(id);
+const value = id => el(id)?.value?.trim() || "";
 
 const operators = [
   ["=", "="],
@@ -351,56 +337,56 @@ const operators = [
 ];
 
 [
-  "ms1","ms0","ms2","ah_ev","ah_dep",
+  "ms1","ms0","ms2",
+  "ah_ev","ah_dep",
   "ust","alt","sb_odd"
 ].forEach(name => {
-  const select = $("op_" + name);
-  if (!select) return;
+  const select = el("op_" + name);
 
-  operators.forEach(([value,label]) => {
+  operators.forEach(([v,label]) => {
     const option = document.createElement("option");
-    option.value = value;
+    option.value = v;
     option.textContent = label;
     select.appendChild(option);
   });
 });
 
-function setBookmaker(bookmaker) {
-  currentBookmaker = bookmaker;
+function setBookmaker(b) {
+  bookmaker = b;
 
-  $("tab-b365").classList.toggle(
-    "active", bookmaker === "Bet365"
+  el("tabBet").classList.toggle(
+    "active", b === "Bet365"
   );
-  $("tab-sbobet").classList.toggle(
-    "active", bookmaker === "Sbobet"
+  el("tabSb").classList.toggle(
+    "active", b === "Sbobet"
   );
 
-  $("form-bet365").style.display =
-    bookmaker === "Bet365" ? "block" : "none";
+  el("betForm").style.display =
+    b === "Bet365" ? "block" : "none";
 
-  $("form-sbobet").style.display =
-    bookmaker === "Sbobet" ? "block" : "none";
+  el("sbForm").style.display =
+    b === "Sbobet" ? "block" : "none";
 }
 
-function setTiming(timing) {
-  currentTiming = timing;
+function setTiming(t) {
+  timing = t;
 
-  $("time-open").classList.toggle(
-    "active", timing === "open"
+  el("openBtn").classList.toggle(
+    "active", t === "open"
   );
-  $("time-close").classList.toggle(
-    "active", timing === "close"
+  el("closeBtn").classList.toggle(
+    "active", t === "close"
   );
 
-  $("title-ms").textContent =
-    "Maç Sonu (MS) " +
-    (timing === "open" ? "Açılış" : "Kapanış") +
-    " Oranları";
+  el("msTitle").textContent =
+    "MAÇ SONU " +
+    (t === "open" ? "AÇILIŞ" : "KAPANIŞ") +
+    " ORANLARI";
 }
 
 function getChatId() {
-  const query = new URLSearchParams(location.search);
-  const chatId = query.get("chat_id");
+  const params = new URLSearchParams(location.search);
+  const chatId = params.get("chat_id");
 
   if (chatId && /^\d+$/.test(chatId)) {
     return chatId;
@@ -410,48 +396,46 @@ function getChatId() {
   return userId ? String(userId) : null;
 }
 
-function collectParams() {
+function collect() {
   return {
-    bookmaker:currentBookmaker,
-    timing:currentTiming,
+    bookmaker:bookmaker,
+    timing:timing,
 
-    op_ms1:val("op_ms1"),
-    val_ms1:val("v_ms1"),
+    op_ms1:value("op_ms1"),
+    val_ms1:value("v_ms1"),
 
-    op_ms0:val("op_ms0"),
-    val_ms0:val("v_ms0"),
+    op_ms0:value("op_ms0"),
+    val_ms0:value("v_ms0"),
 
-    op_ms2:val("op_ms2"),
-    val_ms2:val("v_ms2"),
+    op_ms2:value("op_ms2"),
+    val_ms2:value("v_ms2"),
 
-    op_ah_ev:val("op_ah_ev"),
-    val_ah_ev:val("v_ah_ev"),
+    op_ah_ev:value("op_ah_ev"),
+    val_ah_ev:value("v_ah_ev"),
 
-    op_ah_dep:val("op_ah_dep"),
-    val_ah_dep:val("v_ah_dep"),
+    op_ah_dep:value("op_ah_dep"),
+    val_ah_dep:value("v_ah_dep"),
 
-    op_ust:val("op_ust"),
-    val_ust:val("v_ust"),
+    op_ust:value("op_ust"),
+    val_ust:value("v_ust"),
 
-    op_alt:val("op_alt"),
-    val_alt:val("v_alt"),
+    op_alt:value("op_alt"),
+    val_alt:value("v_alt"),
 
-    selected_score:val("sb_score_select"),
-    op_sb_odd:val("op_sb_odd"),
-    val_sb_odd:val("v_sb_odd"),
+    selected_score:value("sb_score_select"),
+    op_sb_odd:value("op_sb_odd"),
+    val_sb_odd:value("v_sb_odd"),
 
-    final_score:val("final_score")
+    final_score:value("final_score")
   };
 }
 
-function validateParams(p) {
+function validate(p) {
   if (
     p.final_score &&
     !/^\d+\s*[-:]\s*\d+$/.test(p.final_score)
   ) {
-    throw new Error(
-      "Maç skorunu 2-1 veya 1:1 şeklinde girin."
-    );
+    throw new Error("Skor 2-1 şeklinde olmalı.");
   }
 
   const names = p.bookmaker === "Bet365"
@@ -459,84 +443,82 @@ function validateParams(p) {
     : ["sb_odd"];
 
   for (const name of names) {
-    const input = p["val_" + name];
-    const operator = p["op_" + name];
+    const v = p["val_" + name];
+    const op = p["op_" + name];
 
-    if (!input) continue;
+    if (!v) continue;
 
-    const numeric = /^[+-]?\d+(?:[.,]\d+)?$/;
+    const num = /^[+-]?\d+(?:[.,]\d+)?$/;
     const range =
       /^([+-]?\d+(?:[.,]\d+)?)\s*-\s*([+-]?\d+(?:[.,]\d+)?)$/;
 
-    const rangeMatch = input.match(range);
+    const match = v.match(range);
 
-    if (operator === "between" && !rangeMatch) {
+    if (op === "between" && !match) {
       throw new Error(
-        "Aralık için 1.50-2.00 biçimini kullanın."
+        "Aralık için 1.50-2.00 girin."
       );
     }
 
-    if (!numeric.test(input) && !rangeMatch) {
-      throw new Error("Geçersiz oran: " + input);
+    if (!num.test(v) && !match) {
+      throw new Error("Geçersiz oran: " + v);
     }
 
-    if (rangeMatch) {
-      const min = Number(rangeMatch[1].replace(",", "."));
-      const max = Number(rangeMatch[2].replace(",", "."));
+    if (match) {
+      const min = Number(match[1].replace(",", "."));
+      const max = Number(match[2].replace(",", "."));
       if (min > max) {
-        throw new Error(
-          "Aralıkta ilk sayı ikinci sayıdan büyük olamaz."
-        );
+        throw new Error("Aralık sırası hatalı.");
       }
     }
   }
 }
 
-function showStatus(message, isError = false) {
-  const status = $("status-txt");
-  status.style.display = "block";
-  status.style.color = isError ? "#ff7777" : "#00c985";
-  status.textContent = message;
+function status(text, error = false) {
+  const node = el("status");
+  node.style.display = "block";
+  node.style.color = error ? "#ff7777" : "#00c985";
+  node.textContent = text;
 }
 
 function resetButton() {
-  submitting = false;
-  $("submitBtn").disabled = false;
-  $("submitBtn").textContent =
+  busy = false;
+  el("submitBtn").disabled = false;
+  el("submitBtn").textContent =
     "📊 Eşleşen Maçları Getir";
 }
 
 async function sendToBotDirect() {
-  if (submitting) return;
+  if (busy) return;
 
   const chatId = getChatId();
 
   if (!chatId) {
-    showStatus(
-      "❌ Telegram kullanıcı bilgisi alınamadı. " +
-      "Lütfen paneli Telegram botundan açın.",
+    status(
+      "❌ Telegram bilgisi alınamadı. " +
+      "Paneli bot üzerinden açın.",
       true
     );
     return;
   }
 
-  const params = collectParams();
+  const params = collect();
 
   try {
-    validateParams(params);
-  } catch (error) {
-    showStatus("❌ " + error.message, true);
+    validate(params);
+  } catch (err) {
+    status("❌ " + err.message, true);
     return;
   }
 
-  submitting = true;
-  $("submitBtn").disabled = true;
-  $("submitBtn").textContent = "⏳ Sorgu Gönderiliyor...";
+  busy = true;
+  el("submitBtn").disabled = true;
+  el("submitBtn").textContent = "⏳ Gönderiliyor...";
 
-  showStatus("⏳ Sorgu Google Sheets'e iletiliyor...");
+  status("⏳ Analiz isteği gönderiliyor...");
 
   try {
-    await fetch(GOOGLE_SCRIPT_URL, {
+    await fetch(SCRIPT_URL, {
       method:"POST",
       mode:"no-cors",
       redirect:"follow",
@@ -550,27 +532,23 @@ async function sendToBotDirect() {
       })
     });
 
-    showStatus(
-      "📨 Sorgu isteği gönderildi. " +
-      "Analiz raporu Telegram'a gelecek. " +
-      "Rapor gelmezse Apps Script yürütmelerini kontrol edin."
+    status(
+      "📨 İstek gönderildi. " +
+      "Analiz raporunu Telegram'da kontrol edin."
     );
 
-    $("submitBtn").textContent = "📨 İstek Gönderildi";
+    el("submitBtn").textContent =
+      "📨 İstek Gönderildi";
 
-    // no-cors sunucu başarısını doğrulayamaz.
-    // Kullanıcıya durumu göstermek için pencere açık kalır.
     setTimeout(resetButton, 5000);
 
-  } catch (error) {
-    console.error("GoalSignals gönderim hatası:", error);
-
-    showStatus(
-      "❌ İstek gönderilemedi. " +
-      "Bağlantıyı ve Apps Script adresini kontrol edin.",
+  } catch (err) {
+    console.error(err);
+    status(
+      "❌ Bağlantı hatası. " +
+      "Google Apps Script adresini kontrol edin.",
       true
     );
-
     resetButton();
   }
 }
